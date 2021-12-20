@@ -10,18 +10,10 @@ import re as regex
 logger = logging.getLogger(__name__)
 
 
-def enable_log():
-    logger.debug('This is a debug message')
-    logger.info("Logging enabled for root")
-
-
-def connect_to_database() -> Database:
-    bolt_url = "neo4j+s://449e806d.databases.neo4j.io"
-    user = "neo4j"
-    password = "sg6UCnsNoh6NswmueCvUexEgaTcN04SXCU2gjEi9zCE"
+def connect_to_database(bolt_url: str, username: str, password: str) -> Database:
     logging.info(
-        f"Connecting to neo4j database at {bolt_url} with username {user} and password {password}")
-    base = Database(bolt_url, user, password)
+        f"Connecting to neo4j database at {bolt_url} with username {username} and password {password}")
+    base = Database(bolt_url, username, password)
     return base
 
 
