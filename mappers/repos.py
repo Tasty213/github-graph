@@ -21,7 +21,7 @@ def map_repo_files(repo: github.Repository.Repository, base: Database):
         if content.type == "dir":
             folders.process_folder(content, base, repo, repo_properties["key"])
         elif content.type == "file":
-            files.process_file(content, base, repo_properties["key"])
+            files.process_file(content, base, repo)
         else:
             print(f"unkown file type {content.type}")
             raise TypeError(content)

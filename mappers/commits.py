@@ -28,9 +28,9 @@ def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Re
     for file in progress_bar(commit.files, desc="Commit", total=len(commit.files), leave=False):
         file_key = f"file_{file.filename}"
         if not base.check_node_exists(file_key):
-            files.process_deleted_file(file, base, repo)
+            files.process_file(file, base, repo, deleted=True)
         elif file_key in files.files_to_complete:
-            files.update_placeholder_file_node(file, base, repo)
+            files.process_file(file, base, repo, update_placeholder=True)
             files.files_to_complete.remove(file_key)
 
         if file.status == "renamed":

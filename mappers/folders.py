@@ -28,7 +28,7 @@ def process_folder(folder: github.ContentFile.ContentFile, base: Database, repo:
         if content.type == "dir":
             process_folder(content, base, repo, folder_properties["key"])
         elif content.type == "file":
-            files.process_file(content, base, folder_properties["key"])
+            files.process_file(content, base, repo)
         elif content.type == "symlink":
             pass
         else:
