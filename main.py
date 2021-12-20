@@ -1,12 +1,13 @@
 from github import Github
 import argparse
 import utils
+import mappers.repos
+import mappers.commits
 import logging
 
 if __name__ == "__main__":
     logging.config.fileConfig(
         fname='logging.conf', disable_existing_loggers=False)
-
     parser = argparse.ArgumentParser()
     parser.add_argument("-gh", "--github_key")
     parser.add_argument("-gr", "--github_repo")
@@ -23,7 +24,7 @@ if __name__ == "__main__":
     repo = github.get_repo(args.github_repo)
     logging.info(f"Building graph database for {repo.full_name}")
 
-    utils.map_repo_files(repo, base)
-    utils.map_commits(repo, base)
+    mappers.repos.map_repo_files(repo, base)
+    mappers.commits.map_commits(repo, base)
 
     utils.close_database(base)
