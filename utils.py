@@ -58,8 +58,10 @@ def process_folder(folder: github.ContentFile.ContentFile, base: Database, repo:
             process_folder(content, base, repo, folder_properties["key"])
         elif content.type == "file":
             process_file(content, base, folder_properties["key"])
+        elif content.type == "symlink":
+            pass
         else:
-            logging.info(f"unkown file type {folder.type}")
+            logging.critical(f"unkown file type {folder.type}")
             raise TypeError(content)
 
 
@@ -88,7 +90,8 @@ def process_deleted_file(file: github.File.File, base: Database, repo: github.Re
         "key": f"file_{file.filename}"
     }
     base.create_node_generic(["File"], file_properties)
-    base.create_relationship(parent_key, file_properties["key"], "CONTAINS")
+    base.create_relationship(
+        parent_key, file_properties["key"], "CONTAINS", {})
 
 
 def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Repository.Repository):
@@ -98,18 +101,27 @@ def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Re
         "url": commit.html_url,
         "sha": commit.sha,
         "key": f"commit_{commit.sha}",
-        "message": f"{commit.commit.message}"
+        "message": f"{commit.commit.message}",
+        "additions": commit.stats.additions,
+        "deletions": commit.stats.deletions,
+        "totalChanges": commit.stats.total
     }
 
     base.create_node_generic(["Commit"], commit_properties)
 
     for file in progress_bar(commit.files, desc="Commit", total=len(commit.files), leave=False):
+        relationship_properties = {
+            "additions": file.additions,
+            "changes": file.changes,
+            "deletions": file.deletions,
+            "patch": file.patch
+        }
         file_key = f"file_{file.filename}"
         if not base.check_node_exists(file_key):
             process_deleted_file(file, base, repo)
 
         base.create_relationship(
-            commit_properties["key"], file_key, "CHANGED")
+            commit_properties["key"], file_key, "CHANGED", relationship_properties)
 
 
 def map_commits(repo, base):
