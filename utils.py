@@ -9,6 +9,8 @@ import re as regex
 # Get the logger specified in the file
 logger = logging.getLogger(__name__)
 
+files_to_complete = []
+
 
 def connect_to_database(bolt_url: str, username: str, password: str) -> Database:
     logging.info(
@@ -74,22 +76,64 @@ def process_file(file: github.ContentFile.ContentFile, base: Database, parent_ke
         "key": f"file_{file.path}"
     }
     base.create_node_generic(["File"], file_properties)
-    base.create_relationship(parent_key, file_properties["key"], "CONTAINS")
+    base.create_relationship(
+        parent_key, file_properties["key"], "CONTAINS")
 
 
 def process_deleted_file(file: github.File.File, base: Database, repo: github.Repository.Repository):
     if "/" in file.filename:
-        parent_key = regex.search('.*(?=\/.*$)', file.filename).group(0)
+        parent_folder = regex.search('.*(?=\/.*$)', file.filename).group(0)
+        parent_key = f"folder_{parent_folder}"
     else:
         parent_key = f"repo_{repo.full_name}"
-
     file_properties = {
-        "name": file.filename,
+        "name": file.filename.split("/")[-1],
         "url": file.raw_url,
         "sha": file.sha,
         "key": f"file_{file.filename}"
     }
-    base.create_node_generic(["File"], file_properties)
+    base.create_node_generic(["File", "Deleted"], file_properties)
+
+    if not base.check_node_exists(parent_key):
+        process_deleted_folder(parent_folder, base, repo)
+
+    base.create_relationship(
+        parent_key, file_properties["key"], "CONTAINS", {})
+
+
+def process_deleted_folder(path: str, base: Database, repo: github.Repository.Repository):
+    if "/" in path:
+        parent_folder = regex.search('.*(?=\/.*$)', path).group(0)
+        parent_key = f"folder_{parent_folder}"
+    else:
+        parent_key = f"repo_{repo.full_name}"
+    folder_properties = {
+        "name": path.split("/")[-1],
+        "key": f"folder_{path}"
+    }
+    base.create_node_generic(
+        ["Folder", "Deleted"], folder_properties)
+
+    if not base.check_node_exists(parent_key):
+        process_deleted_folder(parent_folder, base, repo)
+
+    base.create_relationship(
+        parent_key, folder_properties["key"], "CONTAINS", {})
+
+
+def update_placeholder_file_node(file: github.File.File, base: Database, repo: github.Repository.Repository):
+    if "/" in file.filename:
+        parent_folder = regex.search('.*(?=\/.*$)', file.filename).group(0)
+        parent_key = f"folder_{parent_folder}"
+    else:
+        parent_key = f"repo_{repo.full_name}"
+    file_properties = {
+        "name": file.filename.split("/")[-1],
+        "url": file.raw_url,
+        "sha": file.sha,
+        "key": f"file_{file.filename}"
+    }
+    base.update_node(["File", "Deleted"], file_properties)
     base.create_relationship(
         parent_key, file_properties["key"], "CONTAINS", {})
 
@@ -106,19 +150,37 @@ def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Re
         "deletions": commit.stats.deletions,
         "totalChanges": commit.stats.total
     }
-
+    if "Merge pull request #" in commit_properties["message"]:
+        return
     base.create_node_generic(["Commit"], commit_properties)
 
     for file in progress_bar(commit.files, desc="Commit", total=len(commit.files), leave=False):
+        file_key = f"file_{file.filename}"
+        if not base.check_node_exists(file_key):
+            process_deleted_file(file, base, repo)
+        elif file_key in files_to_complete:
+            update_placeholder_file_node(file, base, repo)
+            files_to_complete.remove(file_key)
+
+        if file.status == "renamed":
+            logger.critical("file renamed")
+            old_file_properties = {
+                "key": f"file_{file.previous_filename}"
+            }
+            if not base.check_node_exists(old_file_properties["key"]):
+                files_to_complete.append(old_file_properties["key"])
+                base.create_node_generic(
+                    ["File", "Deleted"], old_file_properties)
+
+            base.create_relationship(
+                old_file_properties["key"], file_key, "RENAMED", {})
+
         relationship_properties = {
             "additions": file.additions,
             "changes": file.changes,
             "deletions": file.deletions,
             "patch": file.patch
         }
-        file_key = f"file_{file.filename}"
-        if not base.check_node_exists(file_key):
-            process_deleted_file(file, base, repo)
 
         base.create_relationship(
             commit_properties["key"], file_key, "CHANGED", relationship_properties)

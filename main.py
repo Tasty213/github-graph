@@ -23,7 +23,7 @@ if __name__ == "__main__":
     repo = github.get_repo(args.github_repo)
     logging.info(f"Building graph database for {repo.full_name}")
 
-    #utils.map_repo_files(repo, base)
+    utils.map_repo_files(repo, base)
     utils.map_commits(repo, base)
 
     utils.close_database(base)

@@ -46,7 +46,7 @@ class Database:
                 self._execute_cypher, query)
             return result
 
-    def create_relationship(self, key_1: str, key_2: str, relationship_type: str, properties: dict):
+    def create_relationship(self, key_1: str, key_2: str, relationship_type: str, properties: dict = {}):
         logger.info(
             f"Creating a relationship between {key_1} and {key_2} of type {relationship_type} and properties {properties}")
         properties_string = dict_to_cypher_properties(properties)
@@ -76,6 +76,23 @@ class Database:
                 return False
             else:
                 return True
+
+    def update_node(self, labels: list[str], properties: dict[str, str]) -> neo4j.Result:
+        logger.info(f"Updating node with key {properties['key']}")
+        labels_string = ":".join(labels)
+        properties_string = dict_to_cypher_properties(properties)
+
+        query = (
+            f"MATCH(node) WHERE node.key = '{properties['key']}'"
+            f"SET node:{labels_string} "
+            f"SET node = {properties_string}"
+        )
+
+        with self.driver.session() as session:
+            # Write transactions allow the driver to handle retries and transient errors
+            result = session.write_transaction(
+                self._execute_cypher, query)
+            return result
 
     def clear_database(self):
         with self.driver.session() as session:
