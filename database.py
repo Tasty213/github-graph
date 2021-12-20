@@ -1,5 +1,6 @@
 import logging
 import sys
+from typing import Any
 from neo4j import GraphDatabase
 import neo4j
 from neo4j.exceptions import ServiceUnavailable
@@ -7,11 +8,15 @@ from neo4j.exceptions import ServiceUnavailable
 logger = logging.getLogger(__name__)
 
 
-def dict_to_cypher_properties(properties: dict[str, str]):
+def dict_to_cypher_properties(properties: dict[str, Any]):
     cypher = "{"
-    for property in properties:
-        cypher = cypher + property + ": \"" + \
-            str(properties[property]) + "\","
+    for property_name in properties:
+        property = properties[property_name]
+        if isinstance(property, str):
+            property = property.replace("\\", "\\\\")
+            property = property.replace("\"", "\\\"")
+        cypher = cypher + property_name + ": \"" + \
+            str(property) + "\","
     cypher = cypher.removesuffix(",") + "}"
     return cypher
 
@@ -42,11 +47,14 @@ class Database:
                 self._execute_cypher, query)
             return result
 
-    def create_relationship(self, key_1: str, key_2: str, relationship_type: str):
+    def create_relationship(self, key_1: str, key_2: str, relationship_type: str, properties: dict):
+        logger.info(
+            f"Creating a relationship between {key_1} and {key_2} of type {relationship_type} and properties {properties}")
+        properties_string = dict_to_cypher_properties(properties)
         query = (
             f"MATCH(node_1), (node_2)"
             f"WHERE node_1.key = '{key_1}' AND node_2.key = '{key_2}'"
-            f"CREATE(node_1) - [r:{relationship_type}] -> (node_2)"
+            f"CREATE(node_1) - [r:{relationship_type} {properties_string}] -> (node_2)"
             f"RETURN node_1, r, node_2"
         )
 
