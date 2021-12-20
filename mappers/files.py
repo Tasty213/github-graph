@@ -50,7 +50,7 @@ def _process_deleted_file(file: github.File.File, base: Database, repo: github.R
     base.create_node_generic(["File", "Deleted"], file_properties)
 
     if not base.check_node_exists(parent_key):
-        folders.process_deleted_folder(parent_folder, base, repo)
+        folders.process_folder(parent_folder, base, repo, deleted=True)
 
     base.create_relationship(
         parent_key, file_properties["key"], "CONTAINS", {})

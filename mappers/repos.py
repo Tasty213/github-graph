@@ -19,7 +19,7 @@ def map_repo_files(repo: github.Repository.Repository, base: Database):
 
     for content in progress_bar(repo.get_contents(""), desc="Mapping repo files"):
         if content.type == "dir":
-            folders.process_folder(content, base, repo, repo_properties["key"])
+            folders.process_folder(content, base, repo)
         elif content.type == "file":
             files.process_file(content, base, repo)
         else:
