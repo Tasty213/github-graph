@@ -1,5 +1,4 @@
 import logging
-import sys
 from typing import Any
 from neo4j import GraphDatabase
 import neo4j

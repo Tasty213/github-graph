@@ -1,11 +1,7 @@
-import re
 from github import Github
-from database import Database
-import sys
+import argparse
 import utils
-from time import time
 import logging
-from tqdm import tqdm as progress_bar
 
 if __name__ == "__main__":
     logging.config.fileConfig(
