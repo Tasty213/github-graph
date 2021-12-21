@@ -3,7 +3,7 @@ import logging
 import logging.config
 from database import Database
 from tqdm import tqdm as progress_bar
-from . import files
+from . import files, authors
 
 # Get the logger specified in the file
 logger = logging.getLogger(__name__)
@@ -55,6 +55,10 @@ def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Re
 
         base.create_relationship(
             commit_properties["key"], file_key, "CHANGED", relationship_properties)
+
+    author_key = authors.process_author(commit.author, base)
+    base.create_relationship(
+        author_key, commit_properties["key"], "CREATED", {})
 
 
 def map_commits(repo, base):
