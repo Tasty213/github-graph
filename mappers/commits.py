@@ -23,7 +23,11 @@ def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Re
     }
     if "Merge pull request #" in commit_properties["message"]:
         return
-    base.create_node_generic(["Commit"], commit_properties)
+
+    if base.check_node_exists(commit_properties["key"]):
+        base.update_node(["Commit"], commit_properties)
+    else:
+        base.create_node_generic(["Commit"], commit_properties)
 
     for file in progress_bar(commit.files, desc="Commit", total=len(commit.files), leave=False):
         file_key = f"file_{file.filename}"
@@ -59,6 +63,16 @@ def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Re
     author_key = authors.process_author(commit.author, base)
     base.create_relationship(
         author_key, commit_properties["key"], "CREATED", {})
+
+    for parent in commit.parents:
+        set_parent_relationship(parent, commit_properties["key"], base)
+
+
+def set_parent_relationship(parent: github.GitCommit.GitCommit, current_key: str, base: Database):
+    parent_key = f"commit_{parent.sha}"
+    if not base.check_node_exists(parent_key):
+        base.create_node_generic(["Commit"], {"key": parent_key})
+    base.create_relationship(parent_key, current_key, "CHILD")
 
 
 def map_commits(repo, base):
