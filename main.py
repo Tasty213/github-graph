@@ -3,6 +3,7 @@ import argparse
 import utils
 import mappers.repos
 import mappers.commits
+import mappers.pull_requests
 import logging
 
 if __name__ == "__main__":
@@ -26,5 +27,6 @@ if __name__ == "__main__":
 
     mappers.repos.map_repo_files(repo, base)
     mappers.commits.map_commits(repo, base)
+    mappers.pull_requests.map_pull_requests(repo, base)
 
     utils.close_database(base)
