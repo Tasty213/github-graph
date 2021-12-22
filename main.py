@@ -1,10 +1,12 @@
 from github import Github
 import argparse
+from database import Database
 import utils
 import mappers.repos
 import mappers.commits
 import mappers.labels
 import mappers.pull_requests
+import mappers.milestones
 import logging
 
 if __name__ == "__main__":
@@ -30,5 +32,6 @@ if __name__ == "__main__":
     mappers.commits.map_commits(repo, base)
     mappers.labels.map_labels(repo, base)
     mappers.pull_requests.map_pull_requests(repo, base)
+    mappers.milestones.map_milestones(repo, base)
 
     utils.close_database(base)
