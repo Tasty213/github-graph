@@ -31,7 +31,7 @@ def process_folder(folder: Union[github.ContentFile.ContentFile, str], base: Dat
         base.create_node_generic(["Folder"], folder_properties)
 
         base.create_relationship(
-            parent_key, folder_properties["key"], "CONTAINS")
+            parent_key, folder_properties["key"], "CHILD")
 
         folder_contents = repo.get_contents(folder.path)
         for content in progress_bar(folder_contents, desc=f"{folder_properties['name']}", leave=False):
@@ -63,4 +63,4 @@ def _process_deleted_folder(path: str, base: Database, repo: github.Repository.R
         _process_deleted_folder(parent_folder, base, repo)
 
     base.create_relationship(
-        parent_key, folder_properties["key"], "CONTAINS", {})
+        parent_key, folder_properties["key"], "CHILD", {})

@@ -32,7 +32,7 @@ def process_file(file: Union[github.ContentFile.ContentFile, github.File.File], 
         }
         base.create_node_generic(["File"], file_properties)
         base.create_relationship(
-            parent_key, file_properties["key"], "CONTAINS")
+            parent_key, file_properties["key"], "CHILD")
 
 
 def _process_deleted_file(file: github.File.File, base: Database, repo: github.Repository.Repository):
@@ -53,7 +53,7 @@ def _process_deleted_file(file: github.File.File, base: Database, repo: github.R
         folders.process_folder(parent_folder, base, repo, deleted=True)
 
     base.create_relationship(
-        parent_key, file_properties["key"], "CONTAINS", {})
+        parent_key, file_properties["key"], "CHILD", {})
 
 
 def _update_placeholder_file_node(file: github.File.File, base: Database, repo: github.Repository.Repository):
@@ -70,4 +70,4 @@ def _update_placeholder_file_node(file: github.File.File, base: Database, repo: 
     }
     base.update_node(["File", "Deleted"], file_properties)
     base.create_relationship(
-        parent_key, file_properties["key"], "CONTAINS", {})
+        parent_key, file_properties["key"], "CHILD", {})
