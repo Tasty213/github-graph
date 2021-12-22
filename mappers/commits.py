@@ -15,14 +15,12 @@ def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Re
         "name": f"{commit.author.login} - {commit.sha}",
         "url": commit.html_url,
         "sha": commit.sha,
-        "key": f"commit_{commit.sha}",
+        "key": f"commit_{commit.commit.sha}",
         "message": f"{commit.commit.message}",
         "additions": commit.stats.additions,
         "deletions": commit.stats.deletions,
         "totalChanges": commit.stats.total
     }
-    if "Merge pull request #" in commit_properties["message"]:
-        return
 
     if base.check_node_exists(commit_properties["key"]):
         base.update_node(["Commit"], commit_properties)
