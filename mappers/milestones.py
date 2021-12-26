@@ -9,7 +9,8 @@ logger = logging.getLogger("mappers")
 
 
 def map_milestones(repo: github.Repository.Repository, base: Database):
-    for milestone in progress_bar(repo.get_milestones(status="all"), desc="Processing milestones"):
+    milestones = repo.get_milestones(state="all")
+    for milestone in progress_bar(milestones, desc="Processing milestones", total=milestones.totalCount):
         _process_milestone(milestone, base)
 
 
