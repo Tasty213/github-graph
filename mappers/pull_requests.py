@@ -37,6 +37,10 @@ def process_pull_request(pull_request: github.PullRequest.PullRequest, base: Dat
     base.create_relationship(
         properties["key"], f"user_{pull_request.user.login}", "CREATED")
 
+    if pull_request.milestone != None:
+        base.create_relationship(
+            properties["key"], f"milestone_{pull_request.milestone.title}", "HAS_MILESTONE")
+
 
 def _process_pull_request_assignees(assignees: list[github.NamedUser.NamedUser], base: Database, pull_request_key: str):
     for assignee in assignees:
