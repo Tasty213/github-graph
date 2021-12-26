@@ -13,7 +13,7 @@ logger = logging.getLogger("mappers")
 
 def map_pull_requests(repo: github.Repository.Repository, base: Database):
     pull_requests = repo.get_pulls("closed")
-    for pull_request in progress_bar(pull_requests, desc="Processing pull requests"):
+    for pull_request in progress_bar(pull_requests, desc="Processing pull requests", total=pull_requests.totalCount):
         process_pull_request(pull_request, base)
 
 
@@ -68,6 +68,6 @@ def _process_pull_request_labels(labels: list[github.Label.Label], base: Databas
 
 
 def _process_pull_request_commits(commits: list[github.Commit.Commit], base: Database, pull_request_key: str):
-    for commit in progress_bar(commits, desc="Processing commits in Pull Request"):
+    for commit in progress_bar(commits, desc="Processing commits in Pull Request", total=commits.totalCount):
         base.create_relationship(
             pull_request_key, f"commit_{commit.sha}", "CHILD")
