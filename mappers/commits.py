@@ -58,9 +58,12 @@ def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Re
         base.create_relationship(
             commit_properties["key"], file_key, "CHANGED", relationship_properties)
 
-    author_key = authors.process_author(commit.author, base)
-    base.create_relationship(
-        author_key, commit_properties["key"], "CREATED", {})
+    if commit.author != None:
+        author_key = authors.process_author(commit.author, base)
+        base.create_relationship(
+            author_key, commit_properties["key"], "CREATED", {})
+    else:
+        logger.critical("Commit does not have author")
 
     for parent in commit.parents:
         set_parent_relationship(parent, commit_properties["key"], base)
