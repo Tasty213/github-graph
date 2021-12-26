@@ -4,6 +4,8 @@ import logging.config
 from database import Database
 from tqdm import tqdm as progress_bar
 
+# Get the logger specified in the file
+logger = logging.getLogger("mappers")
 
 def map_labels(repo: github.Repository.Repository, base: Database):
     for label in progress_bar(repo.get_labels(), desc="Processing labels"):

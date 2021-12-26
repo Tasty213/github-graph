@@ -8,7 +8,7 @@ from mappers.commits import process_commit
 from . import files, authors
 
 # Get the logger specified in the file
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("mappers")
 
 
 def map_pull_requests(repo: github.Repository.Repository, base: Database):

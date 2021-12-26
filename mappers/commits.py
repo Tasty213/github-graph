@@ -6,7 +6,7 @@ from tqdm import tqdm as progress_bar
 from . import files, authors
 
 # Get the logger specified in the file
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("mappers")
 
 
 def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Repository.Repository):

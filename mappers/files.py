@@ -5,8 +5,9 @@ from database import Database
 import re as regex
 from . import folders
 from typing import Union
+
 # Get the logger specified in the file
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("mappers")
 
 files_to_complete = []
 

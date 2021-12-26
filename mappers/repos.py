@@ -5,8 +5,9 @@ from database import Database
 from tqdm import tqdm as progress_bar
 from . import folders
 from . import files
+
 # Get the logger specified in the file
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("mappers")
 
 
 def map_repo_files(repo: github.Repository.Repository, base: Database):

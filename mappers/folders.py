@@ -7,8 +7,9 @@ from tqdm import tqdm as progress_bar
 import re as regex
 from . import files
 from typing import Union
+
 # Get the logger specified in the file
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("mappers")
 
 
 def process_folder(folder: Union[github.ContentFile.ContentFile, str], base: Database, repo: github.Repository.Repository, deleted=False):
