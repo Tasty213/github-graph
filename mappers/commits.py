@@ -27,7 +27,7 @@ def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Re
     else:
         base.create_node_generic(["Commit"], commit_properties)
 
-    for file in progress_bar(commit.files, desc="Commit", total=len(commit.files), leave=False):
+    for file in progress_bar(commit.files, desc="Processing files in Commit", total=len(commit.files), leave=False):
         file_key = f"file_{file.filename}"
         if not base.check_node_exists(file_key):
             files.process_file(file, base, repo, deleted=True)

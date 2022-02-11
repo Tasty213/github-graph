@@ -6,7 +6,7 @@ from tqdm import tqdm as progress_bar
 from . import files
 
 # Get the logger specified in the file
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("mappers")
 
 
 def process_author(author: github.NamedUser.NamedUser, base: Database):

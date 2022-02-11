@@ -7,6 +7,7 @@ import mappers.commits
 import mappers.labels
 import mappers.pull_requests
 import mappers.milestones
+import mappers.issues
 import logging
 
 if __name__ == "__main__":
@@ -33,5 +34,5 @@ if __name__ == "__main__":
     mappers.labels.map_labels(repo, base)
     mappers.milestones.map_milestones(repo, base)
     mappers.pull_requests.map_pull_requests(repo, base)
-
+    mappers.issues.map_issues(repo, base)
     utils.close_database(base)
