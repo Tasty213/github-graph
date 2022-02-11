@@ -2,7 +2,6 @@ import github
 import logging
 import logging.config
 from database import Database
-from tqdm import tqdm as progress_bar
 
 # Get the logger specified in the file
 logger = logging.getLogger("mappers")
@@ -10,7 +9,7 @@ logger = logging.getLogger("mappers")
 
 def map_milestones(repo: github.Repository.Repository, base: Database):
     milestones = repo.get_milestones(state="all")
-    for milestone in progress_bar(milestones, desc="Processing milestones", total=milestones.totalCount):
+    for milestone in milestones:
         _process_milestone(milestone, base)
 
 

@@ -3,7 +3,6 @@ import logging
 import logging.config
 from time import sleep
 from database import Database
-from tqdm import tqdm as progress_bar
 import re as regex
 from . import files
 from typing import Union
@@ -35,7 +34,7 @@ def process_folder(folder: Union[github.ContentFile.ContentFile, str], base: Dat
             parent_key, folder_properties["key"], "CHILD")
 
         folder_contents = repo.get_contents(folder.path)
-        for content in progress_bar(folder_contents, desc=f"{folder_properties['name']}", leave=False):
+        for content in folder_contents:
             if content.type == "dir":
                 process_folder(content, base, repo)
             elif content.type == "file":

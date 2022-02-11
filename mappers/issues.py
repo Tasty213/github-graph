@@ -3,7 +3,6 @@ import github
 import logging
 import logging.config
 from database import Database
-from tqdm import tqdm as progress_bar
 from mappers.commits import process_commit
 from . import files, authors
 
@@ -13,7 +12,7 @@ logger = logging.getLogger("mappers")
 
 def map_issues(repo: github.Repository.Repository, base: Database):
     issues = repo.get_issues(state="all")
-    for issue in progress_bar(issues, desc="Processing issues", total=issues.totalCount):
+    for issue in issues:
         process_issue(issue, base)
 
 

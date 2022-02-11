@@ -2,7 +2,6 @@ import github
 import logging
 import logging.config
 from database import Database
-from tqdm import tqdm as progress_bar
 from . import files, authors
 
 # Get the logger specified in the file
@@ -27,7 +26,7 @@ def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Re
     else:
         base.create_node_generic(["Commit"], commit_properties)
 
-    for file in progress_bar(commit.files, desc="Processing files in Commit", total=len(commit.files), leave=False):
+    for file in commit.files:
         file_key = f"file_{file.filename}"
         if not base.check_node_exists(file_key):
             files.process_file(file, base, repo, deleted=True)
@@ -77,5 +76,5 @@ def set_parent_relationship(parent: github.GitCommit.GitCommit, current_key: str
 
 def map_commits(repo, base):
     commits = repo.get_commits()
-    for commit in progress_bar(commits, total=commits.totalCount, desc="Processing commits"):
+    for commit in commits:
         process_commit(commit, base, repo)

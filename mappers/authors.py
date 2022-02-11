@@ -2,7 +2,6 @@ import github
 import logging
 import logging.config
 from database import Database
-from tqdm import tqdm as progress_bar
 from . import files
 
 # Get the logger specified in the file
