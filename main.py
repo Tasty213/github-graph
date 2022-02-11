@@ -17,7 +17,7 @@ if __name__ == "__main__":
     neo4j_bolt = os.getenv("NEO4J_BOLT")
     neo4j_username = os.getenv("NEO4J_USER")
     neo4j_password = os.getenv("NEO4J_PASSWORD")
-    github_key = os.getenv("GITHUB_KEY")
+    github_key = os.getenv("GITHUB_API_KEY")
     github_repo = os.getenv("GITHUB_REPO")
     base = utils.connect_to_database(
         neo4j_bolt, neo4j_username, neo4j_password)
