@@ -1,3 +1,4 @@
+from typing import final
 from github import Github
 import argparse
 from database import Database
@@ -19,19 +20,21 @@ if __name__ == "__main__":
     neo4j_password = os.getenv("NEO4J_PASSWORD")
     github_key = os.getenv("GITHUB_API_KEY")
     github_repo = os.getenv("GITHUB_REPO")
+
     base = utils.connect_to_database(
         neo4j_bolt, neo4j_username, neo4j_password)
+    try:
+        base.clear_database()
 
-    base.clear_database()
+        github = Github(github_key)
+        repo = github.get_repo(github_repo)
+        logging.info(f"Building graph database for {repo.full_name}")
 
-    github = Github(github_key)
-    repo = github.get_repo(github_repo)
-    logging.info(f"Building graph database for {repo.full_name}")
-
-    mappers.repos.map_repo_files(repo, base)
-    mappers.commits.map_commits(repo, base)
-    mappers.labels.map_labels(repo, base)
-    mappers.milestones.map_milestones(repo, base)
-    mappers.pull_requests.map_pull_requests(repo, base)
-    mappers.issues.map_issues(repo, base)
-    utils.close_database(base)
+        mappers.repos.map_repo_files(repo, base)
+        mappers.commits.map_commits(repo, base)
+        mappers.labels.map_labels(repo, base)
+        mappers.milestones.map_milestones(repo, base)
+        mappers.pull_requests.map_pull_requests(repo, base)
+        mappers.issues.map_issues(repo, base)
+    finally:
+        utils.close_database(base)
