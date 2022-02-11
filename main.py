@@ -14,11 +14,11 @@ import os
 if __name__ == "__main__":
     logging.config.fileConfig(
         fname='logging.conf', disable_existing_loggers=False)
-    neo4j_bolt = os.get_env("NEO4J_BOLT")
-    neo4j_username = os.get_env("NEO4J_USER")
-    neo4j_password = os.get_env("NEO4J_PASSWORD")
-    github_key = os.get_env("GITHUB_KEY")
-    github_repo = os.get_env("GITHUB_REPO")
+    neo4j_bolt = os.getenv("NEO4J_BOLT")
+    neo4j_username = os.getenv("NEO4J_USER")
+    neo4j_password = os.getenv("NEO4J_PASSWORD")
+    github_key = os.getenv("GITHUB_KEY")
+    github_repo = os.getenv("GITHUB_REPO")
     base = utils.connect_to_database(
         neo4j_bolt, neo4j_username, neo4j_password)
 
