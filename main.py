@@ -24,7 +24,7 @@ if __name__ == "__main__":
     base = utils.connect_to_database(
         neo4j_bolt, neo4j_username, neo4j_password)
     try:
-        base.clear_database()
+        # base.clear_database()
 
         github = Github(github_key)
         repo = github.get_repo(github_repo)

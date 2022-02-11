@@ -36,7 +36,7 @@ class Database:
         labels_string = ":".join(labels)
         properties_string = dict_to_cypher_properties(properties)
         query = (
-            f"CREATE (node:{labels_string} {properties_string}) "
+            f"MERGE (node:{labels_string} {properties_string}) "
             f"RETURN node"
         )
 
@@ -53,7 +53,7 @@ class Database:
         query = (
             f"MATCH(node_1), (node_2)"
             f"WHERE node_1.key = '{key_1}' AND node_2.key = '{key_2}'"
-            f"CREATE(node_1) - [r:{relationship_type} {properties_string}] -> (node_2)"
+            f"MERGE(node_1) - [r:{relationship_type} {properties_string}] -> (node_2)"
             f"RETURN node_1, r, node_2"
         )
 
