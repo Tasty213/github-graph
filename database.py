@@ -23,6 +23,7 @@ def dict_to_cypher_properties(properties: dict[str, Any]):
 class Database:
     def __init__(self, uri, user, password):
         logger.info("Initialising neo4j driver")
+        logger.info(f"User: {user}, Password: {password}, URI: {uri}")
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
         logger.debug("neo4j driver initialised")
 
