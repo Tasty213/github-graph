@@ -9,24 +9,23 @@ import mappers.pull_requests
 import mappers.milestones
 import mappers.issues
 import logging
+import os
 
 if __name__ == "__main__":
     logging.config.fileConfig(
         fname='logging.conf', disable_existing_loggers=False)
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-gh", "--github_key")
-    parser.add_argument("-gr", "--github_repo")
-    parser.add_argument("-nb", "--neo4j_bolt")
-    parser.add_argument("-nu", "--neo4j_username")
-    parser.add_argument("-np", "--neo4j_password")
-    args = parser.parse_args()
+    neo4j_bolt = os.get_env("NEO4J_BOLT")
+    neo4j_username = os.get_env("NEO4J_USER")
+    neo4j_password = os.get_env("NEO4J_PASSWORD")
+    github_key = os.get_env("GITHUB_KEY")
+    github_repo = os.get_env("GITHUB_REPO")
     base = utils.connect_to_database(
-        args.neo4j_bolt, args.neo4j_username, args.neo4j_password)
+        neo4j_bolt, neo4j_username, neo4j_password)
 
     base.clear_database()
 
-    github = Github(args.github_key)
-    repo = github.get_repo(args.github_repo)
+    github = Github(github_key)
+    repo = github.get_repo(github_repo)
     logging.info(f"Building graph database for {repo.full_name}")
 
     mappers.repos.map_repo_files(repo, base)
