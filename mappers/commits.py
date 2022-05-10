@@ -10,8 +10,8 @@ logger = logging.getLogger("mappers")
 
 def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Repository.Repository):
     commit_properties = {
-        "author": commit.author.login,
-        "name": f"{commit.author.login} - {commit.sha}",
+        "author": commit.author.name,
+        "name": f"{commit.author.name} - {commit.sha}",
         "url": commit.html_url,
         "sha": commit.sha,
         "key": f"commit_{commit.commit.sha}",
