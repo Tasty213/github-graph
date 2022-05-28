@@ -5,13 +5,14 @@ import logging.config
 from database import Database
 from mappers.commits import process_commit
 from . import files, authors
+from wrapper import rate_handler
 
 # Get the logger specified in the file
 logger = logging.getLogger("mappers")
 
 
 def map_pull_requests(repo: github.Repository.Repository, base: Database):
-    pull_requests = repo.get_pulls("closed")
+    pull_requests = rate_handler(repo.get_pulls,"closed")
     for pull_request in pull_requests:
         process_pull_request(pull_request, base)
 
@@ -24,7 +25,7 @@ def process_pull_request(pull_request: github.PullRequest.PullRequest, base: Dat
     base.create_node_generic(labels, properties)
 
     _process_pull_request_commits(
-        pull_request.get_commits(), base, properties["key"])
+        rate_handler(pull_request.get_commits), base, properties["key"])
     _process_pull_request_labels(pull_request.labels, base, properties["key"])
     _process_pull_request_assignees(pull_request.assignees, base,
                                     properties["key"])

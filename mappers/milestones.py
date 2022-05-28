@@ -3,13 +3,14 @@ import logging
 import logging.config
 from database import Database
 from typing import List
+from wrapper import rate_handler
 
 # Get the logger specified in the file
 logger = logging.getLogger("mappers")
 
 
 def map_milestones(repo: github.Repository.Repository, base: Database):
-    milestones = repo.get_milestones(state="all")
+    milestones = rate_handler(repo.get_milestones,state="all")
     for milestone in milestones:
         _process_milestone(milestone, base)
 
@@ -24,7 +25,7 @@ def _process_milestone(milestone: github.Milestone.Milestone, base: Database):
         "key": f"milestone_{milestone.title}"
     }
     base.create_node_generic(["Milestone", milestone.state], properties)
-    _process_milestone_labels(milestone.get_labels(), base, properties["key"])
+    _process_milestone_labels(rate_handler(milestone.get_labels), base, properties["key"])
 
 
 def _process_milestone_labels(labels: List[github.Label.Label], base: Database, milestone_key: str):

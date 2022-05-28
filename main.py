@@ -1,5 +1,5 @@
 from typing import final
-from github import Github
+from wrapper import rate_handler
 import argparse
 from database import Database
 import utils
@@ -11,6 +11,7 @@ import mappers.milestones
 import mappers.issues
 import logging
 import os
+from github import Github
 
 if __name__ == "__main__":
     logging.config.fileConfig(
@@ -18,16 +19,16 @@ if __name__ == "__main__":
     neo4j_bolt = os.getenv("NEO4J_BOLT")
     neo4j_username = os.getenv("NEO4J_USER")
     neo4j_password = os.getenv("NEO4J_PASSWORD")
-    github_key = os.getenv("GITHUB_API_KEY")
+    github_key = "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"
     github_repo = os.getenv("GITHUB_REPO")
 
     base = utils.connect_to_database(
         neo4j_bolt, neo4j_username, neo4j_password)
     try:
-        # base.clear_database()
+        base.clear_database()
 
         github = Github(github_key)
-        repo = github.get_repo(github_repo)
+        repo = rate_handler(github.get_repo, github_repo)
         logging.info(f"Building graph database for {repo.full_name}")
 
         mappers.repos.map_repo_files(repo, base)

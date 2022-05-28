@@ -1,5 +1,7 @@
 import github
 import logging
+from wrapper import rate_handler
+
 import logging.config
 from database import Database
 from . import files, authors
@@ -75,6 +77,6 @@ def set_parent_relationship(parent: github.GitCommit.GitCommit, current_key: str
 
 
 def map_commits(repo, base):
-    commits = repo.get_commits()
+    commits = rate_handler(repo.get_commits)
     for commit in commits:
         process_commit(commit, base, repo)

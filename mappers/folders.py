@@ -6,13 +6,13 @@ from database import Database
 import re as regex
 from . import files
 from typing import Union
+from wrapper import rate_handler
 
 # Get the logger specified in the file
 logger = logging.getLogger("mappers")
 
 
 def process_folder(folder: Union[github.ContentFile.ContentFile, str], base: Database, repo: github.Repository.Repository, deleted=False):
-    sleep(0.1)
     if deleted:
         _process_deleted_folder(folder, base, repo)
     else:
@@ -33,7 +33,7 @@ def process_folder(folder: Union[github.ContentFile.ContentFile, str], base: Dat
         base.create_relationship(
             parent_key, folder_properties["key"], "CHILD")
 
-        folder_contents = repo.get_contents(folder.path)
+        folder_contents = rate_handler(repo.get_contents, folder.path)
         for content in folder_contents:
             if content.type == "dir":
                 process_folder(content, base, repo)

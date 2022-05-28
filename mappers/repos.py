@@ -4,6 +4,7 @@ import logging.config
 from database import Database
 from . import folders
 from . import files
+from wrapper import rate_handler
 
 # Get the logger specified in the file
 logger = logging.getLogger("mappers")
@@ -17,7 +18,7 @@ def map_repo_files(repo: github.Repository.Repository, base: Database):
 
     base.create_node_generic(["Repo"], repo_properties)
 
-    for content in repo.get_contents(""):
+    for content in rate_handler(repo.get_contents, ""):
         if content.type == "dir":
             folders.process_folder(content, base, repo)
         elif content.type == "file":

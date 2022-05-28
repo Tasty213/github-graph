@@ -2,13 +2,14 @@ import github
 import logging
 import logging.config
 from database import Database
+from wrapper import rate_handler
 
 # Get the logger specified in the file
 logger = logging.getLogger("mappers")
 
 
 def map_labels(repo: github.Repository.Repository, base: Database):
-    for label in repo.get_labels():
+    for label in rate_handler(repo.get_labels):
         _process_label(label, base)
 
 

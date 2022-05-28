@@ -5,13 +5,14 @@ import logging.config
 from database import Database
 from mappers.commits import process_commit
 from . import files, authors
+from wrapper import rate_handler
 
 # Get the logger specified in the file
 logger = logging.getLogger("mappers")
 
 
 def map_issues(repo: github.Repository.Repository, base: Database):
-    issues = repo.get_issues(state="all")
+    issues = rate_handler(repo.get_issues, state="all")
     for issue in issues:
         process_issue(issue, base)
 
