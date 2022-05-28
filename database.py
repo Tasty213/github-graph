@@ -1,5 +1,5 @@
 import logging
-from typing import Any
+from typing import Any, Dict, List
 from neo4j import GraphDatabase
 import neo4j
 from neo4j.exceptions import ServiceUnavailable
@@ -7,7 +7,7 @@ from neo4j.exceptions import ServiceUnavailable
 logger = logging.getLogger(__name__)
 
 
-def dict_to_cypher_properties(properties: dict[str, Any]):
+def dict_to_cypher_properties(properties: Dict[str, Any]):
     cypher = "{"
     for property_name in properties:
         property = properties[property_name]
@@ -31,7 +31,7 @@ class Database:
         # Don't forget to close the driver connection when you are finished with it
         self.driver.close()
 
-    def create_node_generic(self, labels: list[str], properties: dict[str, str]):
+    def create_node_generic(self, labels: List[str], properties: Dict[str, str]):
         logger.info(f"Creating a generic node")
         labels_string = ":".join(labels)
         properties_string = dict_to_cypher_properties(properties)
@@ -46,7 +46,7 @@ class Database:
                 self._execute_cypher, query)
             return result
 
-    def create_relationship(self, key_1: str, key_2: str, relationship_type: str, properties: dict = {}):
+    def create_relationship(self, key_1: str, key_2: str, relationship_type: str, properties: Dict = {}):
         logger.info(
             f"Creating a relationship between {key_1} and {key_2} of type {relationship_type} and properties {properties}")
         properties_string = dict_to_cypher_properties(properties)
@@ -77,7 +77,7 @@ class Database:
             else:
                 return True
 
-    def update_node(self, labels: list[str], properties: dict[str, str]) -> neo4j.Result:
+    def update_node(self, labels: List[str], properties: Dict[str, str]) -> neo4j.Result:
         logger.info(f"Updating node with key {properties['key']}")
         labels_string = ":".join(labels)
         properties_string = dict_to_cypher_properties(properties)

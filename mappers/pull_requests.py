@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 import github
 import logging
 import logging.config
@@ -41,7 +41,7 @@ def process_pull_request(pull_request: github.PullRequest.PullRequest, base: Dat
             properties["key"], f"milestone_{pull_request.milestone.title}", "HAS_MILESTONE")
 
 
-def _process_pull_request_assignees(assignees: list[github.NamedUser.NamedUser], base: Database, pull_request_key: str):
+def _process_pull_request_assignees(assignees: List[github.NamedUser.NamedUser], base: Database, pull_request_key: str):
     for assignee in assignees:
         authors.process_author(assignee, base)
         base.create_relationship(
@@ -64,13 +64,13 @@ def _pull_request_to_dict(pull_request) -> dict:
     }
 
 
-def _process_pull_request_labels(labels: list[github.Label.Label], base: Database, pull_request_key: str):
+def _process_pull_request_labels(labels: List[github.Label.Label], base: Database, pull_request_key: str):
     for label in labels:
         base.create_relationship(
             pull_request_key, f"label_{label.name}", "HAS_LABEL")
 
 
-def _process_pull_request_commits(commits: list[github.Commit.Commit], base: Database, pull_request_key: str):
+def _process_pull_request_commits(commits: List[github.Commit.Commit], base: Database, pull_request_key: str):
     for commit in commits:
         base.create_relationship(
             pull_request_key, f"commit_{commit.sha}", "CHILD")

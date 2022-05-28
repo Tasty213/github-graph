@@ -2,6 +2,7 @@ import github
 import logging
 import logging.config
 from database import Database
+from typing import List
 
 # Get the logger specified in the file
 logger = logging.getLogger("mappers")
@@ -26,7 +27,7 @@ def _process_milestone(milestone: github.Milestone.Milestone, base: Database):
     _process_milestone_labels(milestone.get_labels(), base, properties["key"])
 
 
-def _process_milestone_labels(labels: list[github.Label.Label], base: Database, milestone_key: str):
+def _process_milestone_labels(labels: List[github.Label.Label], base: Database, milestone_key: str):
     for label in labels:
         base.create_relationship(
             milestone_key, f"label_{label.name}", "HAS_LABEL")

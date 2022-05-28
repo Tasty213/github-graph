@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 import github
 import logging
 import logging.config
@@ -31,7 +31,7 @@ def process_issue(issue: github.Issue.Issue, base: Database):
     _process_issue_milestone(issue.milestone, base, properties["key"])
 
 
-def _process_issue_assignees(assignees: list[github.NamedUser.NamedUser], base: Database, issue_key: str):
+def _process_issue_assignees(assignees: List[github.NamedUser.NamedUser], base: Database, issue_key: str):
     for assignee in assignees:
         _process_issue_assignee(assignee, base, issue_key)
 
@@ -43,7 +43,7 @@ def _process_issue_assignee(assignee: github.NamedUser.NamedUser, base: Database
             issue_key, f"user_{assignee.login}", "ASSIGNED")
 
 
-def _process_issue_labels(labels: list[github.Label.Label], base: Database, issue_key: str):
+def _process_issue_labels(labels: List[github.Label.Label], base: Database, issue_key: str):
     for label in labels:
         _process_issue_label(label, base, issue_key)
 
