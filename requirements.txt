@@ -2,3 +2,4 @@ neo4j==4.4.3
 PyGithub==1.55
 tqdm==4.64.0
 typing
+black
