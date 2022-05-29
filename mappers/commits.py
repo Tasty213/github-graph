@@ -10,8 +10,10 @@ from . import files, authors
 logger = logging.getLogger("mappers")
 
 
-def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Repository.Repository):
-    commit_properties = {
+def process_commit(commit: github.Commit.Commit,
+                   base: Database,
+                   repo: github.Repository.Repository):
+    properties = {
         "author": commit.author.name,
         "name": f"{commit.author.name} - {commit.sha}",
         "url": commit.html_url,
@@ -23,10 +25,14 @@ def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Re
         "totalChanges": commit.stats.total
     }
 
-    if base.check_node_exists(commit_properties["key"]):
-        base.update_node(["Commit"], commit_properties)
+    logger.info(f"Processing commit {properties['sha']}")
+
+    if base.check_node_exists(properties["key"]):
+        logger.debug("Commit node already exists updating with new properties")
+        base.update_node(["Commit"], properties)
     else:
-        base.create_node_generic(["Commit"], commit_properties)
+        logger.debug("Commit node does not exist creating")
+        base.create_node_generic(["Commit"], properties)
 
     for file in commit.files:
         file_key = f"file_{file.filename}"
@@ -56,20 +62,22 @@ def process_commit(commit: github.Commit.Commit, base: Database, repo: github.Re
         }
 
         base.create_relationship(
-            commit_properties["key"], file_key, "CHANGED", relationship_properties)
+            properties["key"], file_key, "CHANGED", relationship_properties)
 
-    if commit.author != None:
+    if commit.author is not None:
         author_key = authors.process_author(commit.author, base)
         base.create_relationship(
-            author_key, commit_properties["key"], "CREATED", {})
+            author_key, properties["key"], "CREATED", {})
     else:
         logger.critical(f"Commit {commit.sha} does not have author")
 
     for parent in commit.parents:
-        set_parent_relationship(parent, commit_properties["key"], base)
+        set_parent_relationship(parent, properties["key"], base)
 
 
-def set_parent_relationship(parent: github.GitCommit.GitCommit, current_key: str, base: Database):
+def set_parent_relationship(parent: github.GitCommit.GitCommit,
+                            current_key: str,
+                            base: Database):
     parent_key = f"commit_{parent.sha}"
     if not base.check_node_exists(parent_key):
         base.create_node_generic(["Commit"], {"key": parent_key})
