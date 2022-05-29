@@ -1,7 +1,4 @@
-from typing import final
 from wrapper import rate_handler
-import argparse
-from database import Database
 import utils
 import mappers.repos
 import mappers.commits
