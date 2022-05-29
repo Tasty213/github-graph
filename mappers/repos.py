@@ -11,12 +11,12 @@ logger = logging.getLogger("mappers")
 
 
 def map_repo_files(repo: github.Repository.Repository, base: Database):
-    repo_properties = {
+    properties = {
         "key": f"repo_{repo.full_name}",
         "name": repo.name
     }
-
-    base.create_node_generic(["Repo"], repo_properties)
+    logger.info(f"processing repo {properties['name']}")
+    base.create_node_generic(["Repo"], properties)
 
     for content in rate_handler(repo.get_contents, ""):
         if content.type == "dir":

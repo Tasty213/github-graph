@@ -21,4 +21,5 @@ def _process_label(label: github.Label.Label, base: Database):
         "url": label.url,
         "key": f"label_{label.name}"
     }
+    logger.info(f"Processing label {properties['name']}")
     base.create_node_generic(["Label"], properties)

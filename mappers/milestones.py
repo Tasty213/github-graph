@@ -10,7 +10,7 @@ logger = logging.getLogger("mappers")
 
 
 def map_milestones(repo: github.Repository.Repository, base: Database):
-    milestones = rate_handler(repo.get_milestones,state="all")
+    milestones = rate_handler(repo.get_milestones, state="all")
     for milestone in milestones:
         _process_milestone(milestone, base)
 
@@ -22,13 +22,19 @@ def _process_milestone(milestone: github.Milestone.Milestone, base: Database):
         "description": milestone.description,
         "name": milestone.title,
         "url": milestone.url,
-        "key": f"milestone_{milestone.title}"
+        "key": f"milestone_{milestone.title}",
     }
+    logger.info(f"Processing milestone {properties['name']}")
     base.create_node_generic(["Milestone", milestone.state], properties)
-    _process_milestone_labels(rate_handler(milestone.get_labels), base, properties["key"])
+    _process_milestone_labels(
+        rate_handler(milestone.get_labels), base, properties["key"]
+    )
 
 
-def _process_milestone_labels(labels: List[github.Label.Label], base: Database, milestone_key: str):
+def _process_milestone_labels(
+    labels: List[github.Label.Label], base: Database, milestone_key: str
+):
     for label in labels:
         base.create_relationship(
-            milestone_key, f"label_{label.name}", "HAS_LABEL")
+            milestone_key, f"label_{label.name}", "HAS_LABEL"
+        )

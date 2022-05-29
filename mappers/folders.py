@@ -21,7 +21,7 @@ def process_folder(
         _process_deleted_folder(folder, base, repo)
     else:
         if "/" in folder.path:
-            parent_folder = regex.search(r'.*(?=\/.*$)', folder.path).group(0)
+            parent_folder = regex.search(r".*(?=\/.*$)", folder.path).group(0)
             parent_key = f"folder_{parent_folder}"
         else:
             parent_key = f"repo_{repo.full_name}"
@@ -53,13 +53,14 @@ def _process_deleted_folder(
     path: str, base: Database, repo: github.Repository.Repository
 ):
     if "/" in path:
-        parent_folder = regex.search(r'.*(?=\/.*$)', path).group(0)
+        parent_folder = regex.search(r".*(?=\/.*$)", path).group(0)
         parent_key = f"folder_{parent_folder}"
     else:
         parent_key = f"repo_{repo.full_name}"
     folder_properties = {"name": path.split("/")[-1], "key": f"folder_{path}"}
+    logger.info(f"Processing deleted folder {path}")
     base.create_node_generic(["Folder", "Deleted"], folder_properties)
-    
+
     if not base.check_node_exists(parent_key):
         _process_deleted_folder(parent_folder, base, repo)
 
