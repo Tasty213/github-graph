@@ -1,7 +1,7 @@
 from github import Github
 import os
-import utils
-from mappers import commits
+from .. import utils
+from ..mappers import commits
 
 neo4j_bolt = os.getenv("NEO4J_BOLT")
 neo4j_username = os.getenv("NEO4J_USER")
